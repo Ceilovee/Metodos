@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/c/Users/cielo/OneDrive/Documentos/Git/tp metodos/main.cpp
+iostream
+-
+vector
+-
+cmath
+-
+random
+-
+stdlib.h
+-
+
