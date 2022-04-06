@@ -1,4 +1,4 @@
-/usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" "/mnt/c/Users/cielo/OneDrive/Documentos/Git/tp metodos"
+/usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" "/mnt/c/Users/cielo/OneDrive/Documentos/Computacion/Metodos Numericos/TP1/Metodos/tp metodos"
 -- The C compiler identification is GNU 10.2.1
 -- The CXX compiler identification is GNU 10.2.1
 -- Detecting C compiler ABI info
@@ -13,4 +13,4 @@
 -- Detecting CXX compile features - done
 -- Configuring done
 -- Generating done
--- Build files have been written to: /mnt/c/Users/cielo/OneDrive/Documentos/Git/tp metodos/cmake-build-debug
+-- Build files have been written to: /mnt/c/Users/cielo/OneDrive/Documentos/Computacion/Metodos Numericos/TP1/Metodos/tp metodos/cmake-build-debug

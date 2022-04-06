@@ -1,3 +1,3 @@
-/mnt/c/Users/cielo/OneDrive/Documentos/Git/tp metodos/cmake-build-debug/CMakeFiles/edit_cache.dir
-/mnt/c/Users/cielo/OneDrive/Documentos/Git/tp metodos/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/cielo/OneDrive/Documentos/Git/tp metodos/cmake-build-debug/CMakeFiles/untitled.dir
+/mnt/c/Users/cielo/OneDrive/Documentos/Computacion/Metodos Numericos/TP1/Metodos/tp metodos/cmake-build-debug/CMakeFiles/edit_cache.dir
+/mnt/c/Users/cielo/OneDrive/Documentos/Computacion/Metodos Numericos/TP1/Metodos/tp metodos/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/cielo/OneDrive/Documentos/Computacion/Metodos Numericos/TP1/Metodos/tp metodos/cmake-build-debug/CMakeFiles/untitled.dir
