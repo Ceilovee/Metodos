@@ -119,6 +119,9 @@ void altoHorno(int ri, int re, int m, int n, double isoterma, double ti, vector<
         }
     }
 
+    // despues deberiamos calcular la x con las factorizaciones anteriores
+    vector<double> x= resolverTriangularxLU(A,b);
+
 }
 
 int main() {
