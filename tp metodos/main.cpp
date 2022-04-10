@@ -183,8 +183,13 @@ int main() {
     vector<double> b={13,-2,24,-10};
     vector<double> x= (resolverTriangularxLU(facLU(v),b));
     //solucion {1,-30,7,16}*/
-
+    
     //altoHorno(10,20,5,5,50,100,{20,15,18,16,25});
-    altoHorno(10,100, 30, 30, 500, 1500, { 0  ,0 , 0 , 0 , 0 , 0 , 0 , 0  ,0 , 0,  0,  0,  0 , 0 , 0 , 0 , 0 , 0  ,0  ,0  ,0  ,0 , 0 , 0,  0,  0 , 0 , 0 , 0 , 0 });
+    int ri; int re; int m; int n; double isoterma; double ti;
+    std::cin >> ri >> re >> n >> m >> isoterma >> ti;
+    vector<double> te(n,0);
+    for (int i = 0; i < n; ++i) cin >> te[i];
+
+    altoHorno(ri,re,m,n,isoterma,ti,te);
     return 0;
 }
