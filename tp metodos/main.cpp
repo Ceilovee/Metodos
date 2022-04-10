@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include <random>
 #include <stdlib.h>
+
 
 using namespace std;
 
@@ -15,18 +15,6 @@ void mostrarMatriz(vector<vector<double>> m){
     }
 }
 
-/*
-vector<vector<double>> crearRandom(int n){
-    vector<vector<double>> res(n, vector<double>(n));
-    for(int i=0;i<n;i++){
-        for(int j=0;j<n;j++){ //  despues poner rango de 1499-0
-            //double rand= rand(); //hacer numero random
-            //res[i][j]= rand;
-        }
-    }
-    return res;
-}
-*/
 vector<vector<double>> eliminacionGauss(vector<vector<double>> m){
     for(int i=0;i<m.size();i++){
         // if es 0 mover fila
@@ -67,7 +55,7 @@ vector<double> resolverTriangular_L(vector<vector<double>> m, vector<double> b){
         }
     }
  
-    printf("\nSolution for the system:\n");
+    printf("\nSolution for the system (L):\n");
     for (int i=0; i<n; i++)
         printf("%lf\n", x[i]);
     
@@ -78,6 +66,7 @@ vector<double> resolverTriangular(vector<vector<double>> m, vector<double> b){
     int n= m.size();
     vector<double> x(n);  
     
+    
     for (int i = n-1; i >= 0; i--){
         x[i] = b[i];
  
@@ -86,23 +75,13 @@ vector<double> resolverTriangular(vector<vector<double>> m, vector<double> b){
         }
         x[i] = x[i]/m[i][i];
     }
+    //mostrarMatriz(m);
  
     printf("\nSolution for the system:\n");
     for (int i=0; i<n; i++)
         printf("%lf\n", x[i]);
     
     return x;
-}
-
-vector<double> multiplicarL(vector<vector<double>> m, vector<double> b){
-    // esto no funciona ARREGLAR
-    vector<double> aux=b;
-    for(int i=0;i<m.size();i++){
-        for(int j=0;j<i;j++){
-            b[j]+=m[i][j]*b[i];
-        }
-    }
-    return b;
 }
 
 vector<double> resolverTriangularxLU(vector<vector<double>> m,vector<double> b){
@@ -128,6 +107,7 @@ vector<double> armarB(int n, int m, vector<double> te, double ti ){
 }
 
 void encontrarIsoterma(vector<double> x, double isoterma){
+    // hacer que busque bien la isoterma
     for(int i=0; i < x.size();i++){
         if(x[i]==isoterma){
             cout<< "encontramos la isoterma en "<< i;
@@ -146,31 +126,34 @@ void altoHorno(int ri, int re, int m, int n, double isoterma, double ti, vector<
 
     // creo la matriz con los coeficientes
     vector<vector<double>> A(n*m, vector<double>(n*m));
+    vector<double>aux(n*m,0.0);
 
     double c_jm1_k; 
     double c_j_k;
-    double c_j1_k = (1/(((re-ri)/m)^2));
+    double c_j1_k = (1/((pow(((re-ri)/m),2))));
     double c_j_km1; 
     double c_j_k1;
     int fila=0;
     for(int radio=0; radio<m; radio++){
         for(int angulo=0; angulo<n; angulo++){
-            vector<double>aux(n*m,0);
+            for(int k=0; k< aux.size();k++){
+                aux[k]=0.0;
+            }
             if(radio==0){
                 aux[angulo]=1;
                 A[fila]=aux;
                 fila++;
-                break;
             }else if(radio==m-1){
-                aux[angulo]=1;
+                aux[angulo+(radio*n)]=1;
                 A[fila]=aux;
                 fila++;
             }
-            
-            c_jm1_k= (1/(((re-ri)/m)^2) - (1/((radio*((re-ri)/m)))));
-            c_j_k= (-2/(((re-ri)/m)^2))+(1/(radio *((re-ri)/m))) -(2/((2*3)/n)^2);
-            c_j_km1= (1/(radio^2)*((2*3)/n)^2);
-            c_j_k1= (1/(radio^2)*((2*3)/n)^2);
+            else{
+            double radNivel= (radio*((re-ri)/m))+ri;
+            c_jm1_k= (1.0/pow(((re-ri)/m),2)) - (1/((radNivel*((re-ri)/m))));
+            c_j_k= (-2.0/((pow(((re-ri)/m),2))) + (1/(radNivel *((re-ri)/m))) - ( 2.0 / (pow(( (2.0*M_PI) / n ) , 2 )*pow(radNivel,2))));
+            c_j_km1= (1.0/(pow(radNivel,2)*(pow((2*M_PI)/n,2))));
+            c_j_k1= (1.0/(pow(radNivel,2) * pow( ((2*M_PI)/n) ,2)));
 
             // esto se hace por cada fila de la matriz
 
@@ -181,24 +164,27 @@ void altoHorno(int ri, int re, int m, int n, double isoterma, double ti, vector<
             aux[fila-n]=c_jm1_k;
 
             A[fila]=aux;
-            fila++;
+            fila=fila+1;
+            }
+            
         }
     }
 
     // despues deberiamos calcular la x con las factorizaciones anteriores
-    vector<double> x= resolverTriangularxLU(A,b);
+     vector<double> x= resolverTriangularxLU(facLU(A),b);
 
-    encontrarIsoterma(x, isoterma);
+     encontrarIsoterma(x, isoterma);
 
 }
 
 int main() {
-    vector<vector<double>> v = {{2,1,-1,3},{-2,0,0,0},{4,1,-2,4},{-6,-1,2,-3}};
+    /*vector<vector<double>> v = {{2,1,-1,3},{-2,0,0,0},{4,1,-2,4},{-6,-1,2,-3}};
     mostrarMatriz(facLU(v));
     vector<double> b={13,-2,24,-10};
     vector<double> x= (resolverTriangularxLU(facLU(v),b));
+    //solucion {1,-30,7,16}*/
 
-    //altoHorno(10,10,5,5,50,100,{20,15,18,16,25});
+    //altoHorno(10,20,5,5,50,100,{20,15,18,16,25});
+    altoHorno(10,100, 30, 30, 500, 1500, { 0  ,0 , 0 , 0 , 0 , 0 , 0 , 0  ,0 , 0,  0,  0,  0 , 0 , 0 , 0 , 0 , 0  ,0  ,0  ,0  ,0 , 0 , 0,  0,  0 , 0 , 0 , 0 , 0 });
     return 0;
 }
-
