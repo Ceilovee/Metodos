@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <cmath>
 #include <stdlib.h>
@@ -54,10 +55,6 @@ vector<double> resolverTriangular_L(vector<vector<double>> m, vector<double> b){
             x[i] -= m[i][j]*x[j];
         }
     }
- 
-    printf("\nSolution for the system (L):\n");
-    for (int i=0; i<n; i++)
-        printf("%lf\n", x[i]);
     
     return x;
 }
@@ -76,11 +73,7 @@ vector<double> resolverTriangular(vector<vector<double>> m, vector<double> b){
         x[i] = x[i]/m[i][i];
     }
     //mostrarMatriz(m);
- 
-    printf("\nSolution for the system:\n");
-    for (int i=0; i<n; i++)
-        printf("%lf\n", x[i]);
-    
+  
     return x;
 }
 
@@ -88,21 +81,25 @@ vector<double> resolverTriangularxLU(vector<vector<double>> m,vector<double> b){
     vector<double> x(b.size());
     b = resolverTriangular_L(m,b);
     x = resolverTriangular(m,b);
+       
+    //printf("\nSolution for the system (L):\n");
+    //for (int i=0; i<x.size(); i++)
+     //   printf("%lf\n", x[i]);
     return x;
 }
 
-vector<double> armarB(int n, int m, vector<double> te, double ti ){
+vector<double> armarB(int n, int m, vector<double> te){
     vector<double> b(m*n);
     for(int i=0; i<b.size(); i++){
         if(i<n){
-            b[i]=ti;
+            b[i]= te[i];  //ti; esto estaba antes
         }else if(i>=(b.size()-n)){
-            b[i]=te[n-(b.size()-i)];
+            b[i]=te[(2*n)-(b.size()-i)];
         }else{
             b[i]=0;
         }
     }
-    // con esto se crea b de la forma anterior
+    // con esto se crea b de la forma requerida
     return b;
 }
 
@@ -117,12 +114,12 @@ void encontrarIsoterma(vector<double> x, double isoterma){
 
 // m radios y n angulos
 // espero que el vector te tenga n valores
-void altoHorno(int ri, int re, int m, int n, double isoterma, double ti, vector<double> te){
+void altoHorno(int ri, int re, int m, int n, double isoterma, int nist, vector<double> te){
     // tengo que:
     // A= 1 0 0 0  segun se mjultiplique x te
     // b= (ti(x n), 0 ... 0, te)
     // x= (tm=1n=1, ....... tm=m+1n=n)
-    vector<double> b= armarB(n,m,te,ti);
+    vector<double> b= armarB(n,m,te);
 
     // creo la matriz con los coeficientes
     vector<vector<double>> A(n*m, vector<double>(n*m));
@@ -171,9 +168,20 @@ void altoHorno(int ri, int re, int m, int n, double isoterma, double ti, vector<
     }
 
     // despues deberiamos calcular la x con las factorizaciones anteriores
-     vector<double> x= resolverTriangularxLU(facLU(A),b);
+    vector<vector<double>> A_lu = facLU(A);
+    // la factorizo antes entonces solo lo corro una vez para varios tests
+    string filename("testResultado.txt");
+    fstream file_out;
+    file_out.open(filename, std::ios_base::out);
+    
+    for(int j=0; j<nist;j++){
+        vector<double> x= resolverTriangularxLU(A_lu,b);
+        // lo mandamos a un archivo
+        for (int i=0; i<n*m; i++) file_out << fixed <<x[i] << endl;
+    }
+    file_out.close();
 
-     encontrarIsoterma(x, isoterma);
+    //encontrarIsoterma(x, isoterma);
 
 }
 
@@ -182,14 +190,19 @@ int main() {
     mostrarMatriz(facLU(v));
     vector<double> b={13,-2,24,-10};
     vector<double> x= (resolverTriangularxLU(facLU(v),b));
+
+    
     //solucion {1,-30,7,16}*/
     
     //altoHorno(10,20,5,5,50,100,{20,15,18,16,25});
-    int ri; int re; int m; int n; double isoterma; double ti;
-    std::cin >> ri >> re >> n >> m >> isoterma >> ti;
-    vector<double> te(n,0);
-    for (int i = 0; i < n; ++i) cin >> te[i];
+    int ri; int re; int m; int n; double isoterma; int nist;
+    std::cin >> ri >> re >> n >> m >> isoterma >> nist;
+    vector<double> te(2*n,0);
+    // aca cambie a 2*n porque tiene a te y ti
+    for(int j=0; j<nist;j++) for (int i = 0; i < 2*n; ++i) cin >> te[i];
 
-    altoHorno(ri,re,m,n,isoterma,ti,te);
+
+
+    altoHorno(ri,re,m,n,isoterma,nist,te);
     return 0;
 }
