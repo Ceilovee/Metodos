@@ -16,7 +16,7 @@ void mostrarMatriz(vector<vector<double>> m){
     }
 }
 
-vector<vector<double>> eliminacionGauss(vector<vector<double>> m){
+vector<vector<double>> eliminacionGauss(vector<vector<double>> m, vector<double> &b){
     for(int i=0;i<m.size();i++){
         // if es 0 mover fila
         for(int j=i+1;j<m.size();j++){
@@ -24,7 +24,9 @@ vector<vector<double>> eliminacionGauss(vector<vector<double>> m){
             for(int k=i;k<m.size()+1;k++){
                 m[j][k] = m[j][k] - (num* m[i][k]);
             }
+            b[j]=b[j]-(num*b[i]);
         }
+        
     }
     return m;
 }
@@ -92,7 +94,7 @@ vector<double> armarB(int n, int m, vector<double> te){
     vector<double> b(m*n);
     for(int i=0; i<b.size(); i++){
         if(i<n){
-            b[i]= te[i];  //ti; esto estaba antes
+            b[i]= te[i]; 
         }else if(i>=(b.size()-n)){
             b[i]=te[(2*n)-(b.size()-i)];
         }else{
@@ -100,6 +102,7 @@ vector<double> armarB(int n, int m, vector<double> te){
         }
     }
     // con esto se crea b de la forma requerida
+
     return b;
 }
 
@@ -112,19 +115,13 @@ void encontrarIsoterma(vector<double> x, double isoterma){
     }
 }
 
-// m radios y n angulos
-// espero que el vector te tenga n valores
-void altoHorno(int ri, int re, int m, int n, double isoterma, int nist, vector<double> te){
-    // tengo que:
-    // A= 1 0 0 0  segun se mjultiplique x te
-    // b= (ti(x n), 0 ... 0, te)
-    // x= (tm=1n=1, ....... tm=m+1n=n)
-    vector<double> b= armarB(n,m,te);
+vector<vector<double>> crearA(int ri, int re, int m, int n){
 
     // creo la matriz con los coeficientes
     vector<vector<double>> A(n*m, vector<double>(n*m));
     vector<double>aux(n*m,0.0);
 
+    // los coeficientes
     double c_jm1_k; 
     double c_j_k;
     double c_j1_k = (1/((pow(((re-ri)/m),2))));
@@ -148,9 +145,9 @@ void altoHorno(int ri, int re, int m, int n, double isoterma, int nist, vector<d
             else{
             double radNivel= (radio*((re-ri)/m))+ri;
             c_jm1_k= (1.0/pow(((re-ri)/m),2)) - (1/((radNivel*((re-ri)/m))));
-            c_j_k= (-2.0/((pow(((re-ri)/m),2))) + (1/(radNivel *((re-ri)/m))) - ( 2.0 / (pow(( (2.0*M_PI) / n ) , 2 )*pow(radNivel,2))));
+            c_j_k= (-2.0/((pow(((re-ri)/m),2))) + (1/(radNivel *((re-ri)/m))) - (2.0 / (pow(( (2.0*M_PI) / n ) , 2 )*pow(radNivel,2)) ));
             c_j_km1= (1.0/(pow(radNivel,2)*(pow((2*M_PI)/n,2))));
-            c_j_k1= (1.0/(pow(radNivel,2) * pow( ((2*M_PI)/n) ,2)));
+            c_j_k1= (1.0/(pow(radNivel,2)*(pow((2*M_PI)/n,2))));
 
             // esto se hace por cada fila de la matriz
 
@@ -166,19 +163,28 @@ void altoHorno(int ri, int re, int m, int n, double isoterma, int nist, vector<d
             
         }
     }
+    return A;
 
-    // despues deberiamos calcular la x con las factorizaciones anteriores
-    vector<vector<double>> A_lu = facLU(A);
-    // la factorizo antes entonces solo lo corro una vez para varios tests
+}
+
+// m radios y n angulos
+// espero que el vector te tenga n valores
+void altoHorno(vector<vector<double>> A, int m, int n, double isoterma, vector<double> te){
+    // tengo que:
+    // A= 1 0 0 0  segun se mjultiplique x te
+    // b= (ti(x n), 0 ... 0, te)
+    // x= (tm=1n=1, ....... tm=m+1n=n)
+    //cout << "hola" <<endl;
+    vector<double> b= armarB(n,m,te);
+
     string filename("testResultado.txt");
     fstream file_out;
-    file_out.open(filename, std::ios_base::out);
+    file_out.open(filename, std::ios::out);// | std::ios::app);
+    A=eliminacionGauss(A,b);
+    vector<double> x= resolverTriangular(A,b);
+    // lo mandamos a un archivo
+    for (int i=0; i<n*m; i++) file_out << fixed <<x[i] << endl;
     
-    for(int j=0; j<nist;j++){
-        vector<double> x= resolverTriangularxLU(A_lu,b);
-        // lo mandamos a un archivo
-        for (int i=0; i<n*m; i++) file_out << fixed <<x[i] << endl;
-    }
     file_out.close();
 
     //encontrarIsoterma(x, isoterma);
@@ -186,23 +192,29 @@ void altoHorno(int ri, int re, int m, int n, double isoterma, int nist, vector<d
 }
 
 int main() {
-    /*vector<vector<double>> v = {{2,1,-1,3},{-2,0,0,0},{4,1,-2,4},{-6,-1,2,-3}};
+    
+    vector<vector<double>> v = {{2,1,-1,3},{-2,0,0,0},{4,1,-2,4},{-6,-1,2,-3}};
     mostrarMatriz(facLU(v));
     vector<double> b={13,-2,24,-10};
-    vector<double> x= (resolverTriangularxLU(facLU(v),b));
-
+    v= eliminacionGauss(v,b);
+    for(int i=0;i<b.size();i++) cout<< b[i]<<",";
+    vector<double> x= resolverTriangular(v,b);
+    for(int i=0;i<x.size();i++) cout<< x[i]<<",";
     
-    //solucion {1,-30,7,16}*/
-    
-    //altoHorno(10,20,5,5,50,100,{20,15,18,16,25});
+    //solucion {1,-30,7,16}
+    /*
+    altoHorno(10,20,5,5,50,100,{20,15,18,16,25});
     int ri; int re; int m; int n; double isoterma; int nist;
-    std::cin >> ri >> re >> n >> m >> isoterma >> nist;
-    vector<double> te(2*n,0);
+    // std::cin >> ri >> re >> n >> m >> isoterma >> nist;
+    // vector<vector<double>> tes(nist,vector<double>(2*n,0));
     // aca cambie a 2*n porque tiene a te y ti
-    for(int j=0; j<nist;j++) for (int i = 0; i < 2*n; ++i) cin >> te[i];
+    //for(int i=0; i<nist;i++) for (int j = 0; j < 2*n; j++) cin >> tes[i][j];
 
 
+    vector<vector<double>> A = crearA(10,100,30,30);
 
-    altoHorno(ri,re,m,n,isoterma,nist,te);
-    return 0;
+    //A= facLU(A);
+    nist=1;
+    for(int i=0;i<nist;i++) altoHorno(A,30,30,isoterma,{1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 0});
+    */return 0;
 }
