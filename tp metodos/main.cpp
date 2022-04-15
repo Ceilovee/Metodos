@@ -3,6 +3,7 @@
 #include <vector>
 #include <cmath>
 #include <stdlib.h>
+#include <chrono>
 
 
 using namespace std;
@@ -164,7 +165,7 @@ vector<vector<double>> crearA(double ri, double re, double n, double m){
 
 // n radios y m angulos
 // espero que el vector te tenga m valores
-void altoHorno(vector<vector<double>> A, double m, double n, double isoterma, vector<double> te, string algoritmo){
+void altoHorno(vector<vector<double>> A, double m, double n, double isoterma, vector<double> te, string algoritmo, string filename_out){
     // tengo que:
     // A= 1 0 0 0  segun se mjultiplique x te
     // b= (ti(x n), 0 ... 0, te)
@@ -172,7 +173,7 @@ void altoHorno(vector<vector<double>> A, double m, double n, double isoterma, ve
     
     vector<double> b= armarB(n,m,te);
 
-    string filename("testResultado.txt");
+    string filename(filename_out);
     fstream file_out;
     file_out.open(filename, std::ios::app);
     vector<double> x;
@@ -205,20 +206,30 @@ int main(int argc, char** argv) {
     for(int i=0; i<nist;i++) for (int j = 0; j < 2*n; j++) cin >> tes[i][j];
 
     if (algoritmo=="GAUSS"){
+        auto start = chrono::steady_clock::now();
+        
         vector<vector<double>> A = crearA(ri,re,m,n);
-        for(int i=0;i<nist;i++) altoHorno(A,m,n,isoterma,tes[i],algoritmo);
+        for(int i=0;i<nist;i++) altoHorno(A,m,n,isoterma,tes[i],algoritmo,argv[2]);
+
+        auto end = chrono::steady_clock::now();
+        double total_time = chrono::duration<double>(end - start).count();
+        cout << total_time << endl;
     }
 
     else if(algoritmo=="LU"){
+        auto start = chrono::steady_clock::now();
         vector<vector<double>> A = crearA(ri,re,m,n);
         A= facLU(A);
-        for(int i=0;i<nist;i++) altoHorno(A,m,n,isoterma,tes[i],algoritmo);
+        for(int i=0;i<nist;i++) altoHorno(A,m,n,isoterma,tes[i],algoritmo, argv[2]);
+        auto end = chrono::steady_clock::now();
+        double total_time = chrono::duration<double>(end - start).count();
+        cout << total_time << endl;
     }
 
     else{
         cout << "Algoritmo invalido" << endl;
         return -1;
     }
-
+    
     return 0;
 }
