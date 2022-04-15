@@ -115,7 +115,7 @@ void encontrarIsoterma(vector<double> x, double isoterma){
     }
 }
 
-vector<vector<double>> crearA(int ri, int re, int m, int n){
+vector<vector<double>> crearA(double ri, double re, double m, double n){
 
     // creo la matriz con los coeficientes
     vector<vector<double>> A(n*m, vector<double>(n*m));
@@ -202,19 +202,20 @@ int main() {
     for(int i=0;i<x.size();i++) cout<< x[i]<<",";
     
     //solucion {1,-30,7,16}
-    /*
-    altoHorno(10,20,5,5,50,100,{20,15,18,16,25});
-    int ri; int re; int m; int n; double isoterma; int nist;
-    // std::cin >> ri >> re >> n >> m >> isoterma >> nist;
-    // vector<vector<double>> tes(nist,vector<double>(2*n,0));
+    
+    //altoHorno(10,20,5,5,50,100,{20,15,18,16,25});
+    double ri; double re; double m; double n; double isoterma; int nist;
+    std::cin >> ri >> re >> n >> m >> isoterma >> nist;
+    vector<vector<double>> tes(nist,vector<double>(2*n,0));
     // aca cambie a 2*n porque tiene a te y ti
-    //for(int i=0; i<nist;i++) for (int j = 0; j < 2*n; j++) cin >> tes[i][j];
+    for(int i=0; i<nist;i++) for (int j = 0; j < 2*n; j++) cin >> tes[i][j];
 
 
-    vector<vector<double>> A = crearA(10,100,30,30);
-
+    //vector<vector<double>> A = crearA(10,100,30,30);
+    vector<vector<double>> A = crearA(ri,re,m,n);
     //A= facLU(A);
-    nist=1;
-    for(int i=0;i<nist;i++) altoHorno(A,30,30,isoterma,{1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 0});
-    */return 0;
+    //nist=1;
+    //for(int i=0;i<nist;i++) altoHorno(A,30,30,isoterma,{1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 0});
+    for(int i=0;i<nist;i++) altoHorno(A,m,n,isoterma,tes[i]);
+    return 0;
 }
