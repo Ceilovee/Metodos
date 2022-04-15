@@ -150,7 +150,28 @@ vector<vector<double>> crearA(double ri, double re, double m, double n){
             c_j_k1= (1.0/(pow(radNivel,2)*(pow((2*M_PI)/n,2))));
 
             // esto se hace por cada fila de la matriz
+            if(angulo==0){
+            aux[fila]=c_j_k;
+            aux[fila+(n-1)]=c_j_km1;
+            aux[fila+1]=c_j_k1;
+            aux[fila+n]=c_j1_k;
+            aux[fila-n]=c_jm1_k;
 
+            A[fila]=aux;
+            fila=fila+1;
+
+            }else if (angulo==n-1){
+            aux[fila]=c_j_k;
+            aux[fila-1]=c_j_km1;
+            aux[fila-(n-1)]=c_j_k1;
+            aux[fila+n]=c_j1_k;
+            aux[fila-n]=c_jm1_k;
+
+            A[fila]=aux;
+            fila=fila+1;
+            
+            }else{
+            
             aux[fila]=c_j_k;
             aux[fila-1]=c_j_km1;
             aux[fila+1]=c_j_k1;
@@ -159,6 +180,7 @@ vector<vector<double>> crearA(double ri, double re, double m, double n){
 
             A[fila]=aux;
             fila=fila+1;
+            }
             }
             
         }
