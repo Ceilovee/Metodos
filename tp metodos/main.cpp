@@ -74,7 +74,6 @@ vector<double> resolverTriangular(vector<vector<double>> m, vector<double> b){
         }
         x[i] = x[i]/m[i][i];
     }
-    //mostrarMatriz(m);
   
     return x;
 }
@@ -83,10 +82,6 @@ vector<double> resolverTriangularxLU(vector<vector<double>> m,vector<double> b){
     vector<double> x(b.size());
     b = resolverTriangular_L(m,b);
     x = resolverTriangular(m,b);
-       
-    //printf("\nSolution for the system (L):\n");
-    //for (int i=0; i<x.size(); i++)
-     //   printf("%lf\n", x[i]);
     return x;
 }
 
@@ -106,102 +101,81 @@ vector<double> armarB(int n, int m, vector<double> te){
     return b;
 }
 
-void encontrarIsoterma(vector<double> x, double isoterma){
-    // hacer que busque bien la isoterma
-    for(int i=0; i < x.size();i++){
-        if(x[i]==isoterma){
-            cout<< "encontramos la isoterma en "<< i;
-        }
-    }
-}
-
-vector<vector<double>> crearA(double ri, double re, double m, double n){
+vector<vector<double>> crearA(double ri, double re, double n, double m){
 
     // creo la matriz con los coeficientes
-    vector<vector<double>> A(n*m, vector<double>(n*m));
+    vector<vector<double>> A(n*m, vector<double>(n*m,0));
     vector<double>aux(n*m,0.0);
 
     // los coeficientes
     double c_jm1_k; 
     double c_j_k;
-    double c_j1_k = (1/((pow(((re-ri)/m),2))));
+    double c_j1_k = (1/((pow(((re-ri)/(m-1)),2))));
     double c_j_km1; 
     double c_j_k1;
-    int fila=0;
-    for(int radio=0; radio<m; radio++){
-        for(int angulo=0; angulo<n; angulo++){
-            for(int k=0; k< aux.size();k++){
-                aux[k]=0.0;
-            }
-            if(radio==0){
-                aux[angulo]=1;
-                A[fila]=aux;
-                fila++;
-            }else if(radio==m-1){
-                aux[angulo+(radio*n)]=1;
-                A[fila]=aux;
-                fila++;
-            }
-            else{
-            double radNivel= (radio*((re-ri)/m))+ri;
-            c_jm1_k= (1.0/pow(((re-ri)/m),2)) - (1/((radNivel*((re-ri)/m))));
-            c_j_k= (-2.0/((pow(((re-ri)/m),2))) + (1/(radNivel *((re-ri)/m))) - (2.0 / (pow(( (2.0*M_PI) / n ) , 2 )*pow(radNivel,2)) ));
+
+    int radio=0;
+    for(int i=0;i<n*m;i++){
+        
+        radio = int( i / (n) );
+       if( i < n || i>= (n*m)-(n)){
+           A[i][i]=1;  
+       }else {
+            double radNivel= (radio*((re-ri)/(m-1)))+ri;
+            c_j1_k = (1/((pow(((re-ri)/(m-1)),2))));
+            c_jm1_k= (1.0/pow(((re-ri)/(m-1)),2)) - (1.0/((radNivel*((re-ri)/(m-1)))));
+            c_j_k= (-2.0/((pow(((re-ri)/(m-1)),2))) + (1.0/(radNivel *((re-ri)/(m-1)))) - (2.0 / (pow(( (2.0*M_PI) / n ) , 2 )*pow(radNivel,2)) ));
             c_j_km1= (1.0/(pow(radNivel,2)*(pow((2*M_PI)/n,2))));
             c_j_k1= (1.0/(pow(radNivel,2)*(pow((2*M_PI)/n,2))));
+           
+           
+           if ( i % int(n) == 0){
 
-            // esto se hace por cada fila de la matriz
-            if(angulo==0){
-            aux[fila]=c_j_k;
-            aux[fila+(n-1)]=c_j_km1;
-            aux[fila+1]=c_j_k1;
-            aux[fila+n]=c_j1_k;
-            aux[fila-n]=c_jm1_k;
+                A[i][i]=c_j_k;
+                A[i][i+(n-1)]=c_j_km1;
+                A[i][i+1]=c_j_k1;
+                A[i][i+n]=c_j1_k;
+                A[i][i-n]=c_jm1_k;
 
-            A[fila]=aux;
-            fila=fila+1;
+           }
+           else if(i % int(n) == n-1){
+                A[i][i]=c_j_k;
+                A[i][i-1]=c_j_km1;
+                A[i][i-(n-1)]=c_j_k1;
+                A[i][i+n]=c_j1_k;
+                A[i][i-n]=c_jm1_k;
 
-            }else if (angulo==n-1){
-            aux[fila]=c_j_k;
-            aux[fila-1]=c_j_km1;
-            aux[fila-(n-1)]=c_j_k1;
-            aux[fila+n]=c_j1_k;
-            aux[fila-n]=c_jm1_k;
 
-            A[fila]=aux;
-            fila=fila+1;
-            
-            }else{
-            
-            aux[fila]=c_j_k;
-            aux[fila-1]=c_j_km1;
-            aux[fila+1]=c_j_k1;
-            aux[fila+n]=c_j1_k;
-            aux[fila-n]=c_jm1_k;
-
-            A[fila]=aux;
-            fila=fila+1;
-            }
-            }
-            
-        }
+           }else{
+                if ( i < (n*m)-n){
+                    A[i][i]=c_j_k;
+                    A[i][i-1]=c_j_km1;
+                    A[i][i+1]=c_j_k1;
+                    A[i][i+n]=c_j1_k;
+                    A[i][i-n]=c_jm1_k;
+                }
+           }
+       }
     }
+    
     return A;
 
 }
 
-// m radios y n angulos
-// espero que el vector te tenga n valores
-void altoHorno(vector<vector<double>> A, int m, int n, double isoterma, vector<double> te){
+// n radios y m angulos
+// espero que el vector te tenga m valores
+void altoHorno(vector<vector<double>> A, double m, double n, double isoterma, vector<double> te){
     // tengo que:
     // A= 1 0 0 0  segun se mjultiplique x te
     // b= (ti(x n), 0 ... 0, te)
     // x= (tm=1n=1, ....... tm=m+1n=n)
-    //cout << "hola" <<endl;
+    
     vector<double> b= armarB(n,m,te);
 
     string filename("testResultado.txt");
     fstream file_out;
-    file_out.open(filename, std::ios::out);// | std::ios::app);
+    file_out.open(filename, std::ios::app);
+    mostrarMatriz(A);
     A=eliminacionGauss(A,b);
     vector<double> x= resolverTriangular(A,b);
     // lo mandamos a un archivo
@@ -209,35 +183,19 @@ void altoHorno(vector<vector<double>> A, int m, int n, double isoterma, vector<d
     
     file_out.close();
 
-    //encontrarIsoterma(x, isoterma);
 
 }
 
 int main() {
     
-    vector<vector<double>> v = {{2,1,-1,3},{-2,0,0,0},{4,1,-2,4},{-6,-1,2,-3}};
-    mostrarMatriz(facLU(v));
-    vector<double> b={13,-2,24,-10};
-    v= eliminacionGauss(v,b);
-    for(int i=0;i<b.size();i++) cout<< b[i]<<",";
-    vector<double> x= resolverTriangular(v,b);
-    for(int i=0;i<x.size();i++) cout<< x[i]<<",";
-    
-    //solucion {1,-30,7,16}
-    
-    //altoHorno(10,20,5,5,50,100,{20,15,18,16,25});
     double ri; double re; double m; double n; double isoterma; int nist;
     std::cin >> ri >> re >> n >> m >> isoterma >> nist;
     vector<vector<double>> tes(nist,vector<double>(2*n,0));
-    // aca cambie a 2*n porque tiene a te y ti
+
     for(int i=0; i<nist;i++) for (int j = 0; j < 2*n; j++) cin >> tes[i][j];
 
-
-    //vector<vector<double>> A = crearA(10,100,30,30);
     vector<vector<double>> A = crearA(ri,re,m,n);
     //A= facLU(A);
-    //nist=1;
-    //for(int i=0;i<nist;i++) altoHorno(A,30,30,isoterma,{1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 0});
     for(int i=0;i<nist;i++) altoHorno(A,m,n,isoterma,tes[i]);
     return 0;
 }
