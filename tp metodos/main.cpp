@@ -164,7 +164,7 @@ vector<vector<double>> crearA(double ri, double re, double n, double m){
 
 // n radios y m angulos
 // espero que el vector te tenga m valores
-void altoHorno(vector<vector<double>> A, double m, double n, double isoterma, vector<double> te){
+void altoHorno(vector<vector<double>> A, double m, double n, double isoterma, vector<double> te, string algoritmo){
     // tengo que:
     // A= 1 0 0 0  segun se mjultiplique x te
     // b= (ti(x n), 0 ... 0, te)
@@ -175,9 +175,16 @@ void altoHorno(vector<vector<double>> A, double m, double n, double isoterma, ve
     string filename("testResultado.txt");
     fstream file_out;
     file_out.open(filename, std::ios::app);
-    mostrarMatriz(A);
-    A=eliminacionGauss(A,b);
-    vector<double> x= resolverTriangular(A,b);
+    vector<double> x;
+
+    if (algoritmo=="GAUSS"){
+        A=eliminacionGauss(A,b);
+        x= resolverTriangular(A,b);
+    }
+    else{
+        x= resolverTriangularxLU(A,b);
+    }
+
     // lo mandamos a un archivo
     for (int i=0; i<n*m; i++) file_out << fixed <<x[i] << endl;
     
@@ -186,16 +193,32 @@ void altoHorno(vector<vector<double>> A, double m, double n, double isoterma, ve
 
 }
 
-int main() {
+
+int main(int argc, char** argv) {
     
+    string algoritmo = argv[1];
+
     double ri; double re; double m; double n; double isoterma; int nist;
     std::cin >> ri >> re >> n >> m >> isoterma >> nist;
     vector<vector<double>> tes(nist,vector<double>(2*n,0));
 
     for(int i=0; i<nist;i++) for (int j = 0; j < 2*n; j++) cin >> tes[i][j];
 
-    vector<vector<double>> A = crearA(ri,re,m,n);
-    //A= facLU(A);
-    for(int i=0;i<nist;i++) altoHorno(A,m,n,isoterma,tes[i]);
+    if (algoritmo=="GAUSS"){
+        vector<vector<double>> A = crearA(ri,re,m,n);
+        for(int i=0;i<nist;i++) altoHorno(A,m,n,isoterma,tes[i],algoritmo);
+    }
+
+    else if(algoritmo=="LU"){
+        vector<vector<double>> A = crearA(ri,re,m,n);
+        A= facLU(A);
+        for(int i=0;i<nist;i++) altoHorno(A,m,n,isoterma,tes[i],algoritmo);
+    }
+
+    else{
+        cout << "Algoritmo invalido" << endl;
+        return -1;
+    }
+
     return 0;
 }
