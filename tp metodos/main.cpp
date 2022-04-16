@@ -104,7 +104,7 @@ vector<double> armarB(int n, int m, vector<double> te){
 
 vector<vector<double>> crearA(double ri, double re, double n, double m){
 
-    // creo la matriz con los coeficientes
+    // creamos la matriz con todo en 0
     vector<vector<double>> A(n*m, vector<double>(n*m,0));
     vector<double>aux(n*m,0.0);
 
@@ -163,14 +163,8 @@ vector<vector<double>> crearA(double ri, double re, double n, double m){
 
 }
 
-// n radios y m angulos
-// espero que el vector te tenga m valores
 void altoHorno(vector<vector<double>> A, double m, double n, double isoterma, vector<double> te, string algoritmo, string filename_out){
-    // tengo que:
-    // A= 1 0 0 0  segun se mjultiplique x te
-    // b= (ti(x n), 0 ... 0, te)
-    // x= (tm=1n=1, ....... tm=m+1n=n)
-    
+  
     vector<double> b= armarB(n,m,te);
 
     string filename(filename_out);
