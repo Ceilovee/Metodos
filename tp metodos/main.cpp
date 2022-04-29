@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void mostrarMatriz(vector<vector<double>> m){
+void mostrarMatriz(vector<vector<double>> &m){
     for(int i=0;i<m.size();i++){
         for(int j=0;j<m.size();j++) {
             cout<< m[i][j]<<" ";
@@ -17,7 +17,7 @@ void mostrarMatriz(vector<vector<double>> m){
     }
 }
 
-vector<vector<double>> eliminacionGauss(vector<vector<double>> m, vector<double> &b){
+vector<vector<double>> eliminacionGauss(vector<vector<double>> &m, vector<double> &b){
     for(int i=0;i<m.size();i++){
         // if es 0 mover fila
         for(int j=i+1;j<m.size();j++){
@@ -32,7 +32,7 @@ vector<vector<double>> eliminacionGauss(vector<vector<double>> m, vector<double>
     return m;
 }
 
-vector<vector<double>> facLU(vector<vector<double>> m){
+vector<vector<double>> facLU(vector<vector<double>> &m){
     for(int i=0;i<m.size();i++){
         // if es 0 mover fila
         for(int j=i+1;j<m.size();j++){
@@ -47,7 +47,7 @@ vector<vector<double>> facLU(vector<vector<double>> m){
 }
 
 
-vector<double> resolverTriangular_L(vector<vector<double>> m, vector<double> b){
+vector<double> resolverTriangular_L(vector<vector<double>> &m, vector<double> &b){
     int n= m.size();
     vector<double> x(n);  
     
@@ -62,7 +62,7 @@ vector<double> resolverTriangular_L(vector<vector<double>> m, vector<double> b){
     return x;
 }
  
-vector<double> resolverTriangular(vector<vector<double>> m, vector<double> b){
+vector<double> resolverTriangular(vector<vector<double>> &m, vector<double> &b){
     int n= m.size();
     vector<double> x(n);  
     
@@ -79,14 +79,14 @@ vector<double> resolverTriangular(vector<vector<double>> m, vector<double> b){
     return x;
 }
 
-vector<double> resolverTriangularxLU(vector<vector<double>> m,vector<double> b){
+vector<double> resolverTriangularxLU(vector<vector<double>> &m,vector<double> &b){
     vector<double> x(b.size());
     b = resolverTriangular_L(m,b);
     x = resolverTriangular(m,b);
     return x;
 }
 
-vector<double> armarB(int n, int m, vector<double> te){
+vector<double> armarB(int m, int n, vector<double> &te){
     vector<double> b(m*n);
     for(int i=0; i<b.size(); i++){
         if(i<n){
@@ -102,7 +102,7 @@ vector<double> armarB(int n, int m, vector<double> te){
     return b;
 }
 
-vector<vector<double>> crearA(double ri, double re, double n, double m){
+vector<vector<double>> crearA(double ri, double re, double m, double n){
 
     // creamos la matriz con todo en 0
     vector<vector<double>> A(n*m, vector<double>(n*m,0));
@@ -163,9 +163,9 @@ vector<vector<double>> crearA(double ri, double re, double n, double m){
 
 }
 
-void altoHorno(vector<vector<double>> A, double m, double n, double isoterma, vector<double> te, string algoritmo, string filename_out){
+void altoHorno(vector<vector<double>> &A, double m, double n, double isoterma, vector<double> &te, string algoritmo, string filename_out){
   
-    vector<double> b= armarB(n,m,te);
+    vector<double> b= armarB( m,n,te);
 
     string filename(filename_out);
     fstream file_out;
@@ -194,7 +194,7 @@ int main(int argc, char** argv) {
     string algoritmo = argv[1];
 
     double ri; double re; double m; double n; double isoterma; int nist;
-    std::cin >> ri >> re >> n >> m >> isoterma >> nist;
+    std::cin >> ri >> re >> m >> n >> isoterma >> nist;
     vector<vector<double>> tes(nist,vector<double>(2*n,0));
 
     for(int i=0; i<nist;i++) for (int j = 0; j < 2*n; j++) cin >> tes[i][j];
